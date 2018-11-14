@@ -10,8 +10,8 @@ uid: core/what-is-new/ef-core-2.2
 
 ## Spatial data support
 
-Spatial data can be used to represent physical locations and the shape of objects.
-Many databases can natively store, index, and query spatial data in tables alongside other types of data. 
+Spatial data can be used to represent the physical location and shape of objects.
+Many databases can natively store, index, and query spatial data. 
 Common scenarios include querying for objects within a given distance, and testing if a polygon contains a given location.
 EF Core 2.2 now supports working with spatial data from various databases using types from the [NetTopologySuite](https://github.com/NetTopologySuite/NetTopologySuite) (NTS) library.
 

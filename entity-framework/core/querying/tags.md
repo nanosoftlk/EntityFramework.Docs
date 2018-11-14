@@ -1,4 +1,3 @@
-
 ---
 title: Query Tags - EF Core
 author: divega

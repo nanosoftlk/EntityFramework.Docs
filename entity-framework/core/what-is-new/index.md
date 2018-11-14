@@ -17,7 +17,7 @@ You can use the links below to learn about new features in each release:
 
 ## Recent releases
 
-- [EF Core 2.1 (latest released version)](xref:core/what-is-new/ef-core-2.1)
+- [EF Core 2.1 (latest version)](xref:core/what-is-new/ef-core-2.1)
 
 ## Past releases
 
