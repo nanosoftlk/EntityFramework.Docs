@@ -10,16 +10,17 @@ uid: core/what-is-new/ef-core-2.2
 
 ## Spatial data support
 
-Spatial data can be used to represent the physical location and the shape of objects.
-Many databases provide support for this type of data so it can be indexed and queried alongside other data.
-Common scenarios include querying for objects within a given distance from a location, or selecting the object whose border contains a given location.
-EF Core 2.2 supports mapping spatial data in multiple database to types defined by the [NetTopologySuite](https://github.com/NetTopologySuite/NetTopologySuite) (NTS) spatial library.
+Spatial data can be used to represent physical locations and the shape of objects.
+Many databases can natively store, index, and query spatial data in tables alongside other types of data. 
+Common scenarios include querying for objects within a given distance, and testing if a polygon contains a given location.
+EF Core 2.2 now supports working with spatial data from various databases using types from the [NetTopologySuite](https://github.com/NetTopologySuite/NetTopologySuite) (NTS) library.
 
-In order to take advantage of this new feature, you install a provider-specific extension pacakge that contributes the necessary type mappings and translations for common methods in spatial types.
+Spatial data support is implemented as a series of provider-specific extension packages.
+Each of these packages contributes mappings for NTS types and methods and the corresponding spatial types and functions in the database.
 Such provider extensions are now available for [SQL Server](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite/), [SQLite](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore.Sqlite.NetTopologySuite/), and [PostgreSQL](https://www.nuget.org/packages/Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite/) (from the [Npgsql project](http://www.npgsql.org/)).
 Spatial types can be used directly with the [EF Core in-memory provider](https://docs.microsoft.com/en-us/ef/core/providers/in-memory/) without additional extensions.
 
-Once you have installed the provider extension, you can add properties of supported types to your entities, e.g.:
+Once the provider extension is installed, you can add properties of supported types to your entities. For example:
 
 ``` csharp
 using NetTopologySuite.Geometries;
@@ -37,7 +38,7 @@ namespace MyApp
 }
 ``` 
 
-You can then persist entities containing spatial data:
+You can then persist entities with spatial data:
 
 ``` csharp
 using (var context = new MyDbContext())
@@ -64,24 +65,29 @@ For more information on this feature, see the [spatial types documentation](xref
 
 ## Collections of owned entities
 
-EF Core 2.2 extends the ability to express ownership relationships to one-to-many associations.
-This helps constraining how entities in an owned collection can be manipulated (for example, they cannot be tracked without an owner) and triggers automatic behaviors such as implicit eager loading.
+EF Core 2.0 added the ability to model ownership in one-to-one associations.  
+EF Core 2.2 extends the ability to express ownership to one-to-many associations.
+Ownership helps constrain how entities are used. 
+For example, owned entities:
+- Can only ever appear on navigation properties of other entity types. 
+- Are automatically loaded, and can only be tracked by a DbContext alongside their owner.
 In relational databases, owned collections are mapped to separate tables from the owner, just like regular one-to-many associations.
 But in document-oriented databases, we plan to nest owned entities (in owned collections or references) within the same document as the owner.
 
-You can use the feature by invoking the new OwnsMany() API:
+You can use the feature by calling the new OwnsMany() API:
 
 ``` csharp
 modelBuilder.Entity<Customer>().OwnsMany(c => c.Addresses);
 ```
 
-For more information about collections of owned entities, see the [updated documentation page](xref:core/modeling/owned-entities#collections-of-owned-types).
+For more information, see the [updated owned entities documentation](xref:core/modeling/owned-entities#collections-of-owned-types).
 
 ## Query tags
 
-This feature is designed to facilitate the correlation of LINQ queries in code with the corresponding generated SQL output captured in logs.
+This feature simplifies the correlation of LINQ queries in code with generated SQL queries captured in logs.
 
-To take advantage of the feature, you annotate a query using the new TagWith() API in a LINQ query. Using the spatial query from a previous example:
+To take advantage of query tags, you annotate a LINQ query using the new TagWith() method.
+Using the spatial query from a previous example:
 
 ``` csharp
   var nearestFriends =
@@ -90,7 +96,7 @@ To take advantage of the feature, you annotate a query using the new TagWith() A
       select f).Take(5).ToList();
 ```
 
-This will produce the following SQL output:
+This LINQ query will produce the following SQL output:
 
 ``` sql
 -- This is my spatial query!
@@ -100,4 +106,4 @@ FROM [Friends] AS [f]
 ORDER BY [f].[Location].STDistance(@__myLocation_0) DESC
 ```
 
-For more information, see the [Query Tags documentation](xref:core/querying/tags). 
+For more information, see the [query tags documentation](xref:core/querying/tags). 

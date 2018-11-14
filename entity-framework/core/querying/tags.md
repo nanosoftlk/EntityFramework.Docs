@@ -11,9 +11,9 @@ uid: core/querying/tags
 > [!NOTE]
 > This feature is new in EF Core 2.2.
 
-This feature is designed to facilitate the correlation of LINQ queries in code with the corresponding generated SQL output captured in logs.
+This feature simplifies the correlation of LINQ queries in code with generated SQL queries captured in logs.
 
-To take advantage of the feature, you annotate a query using the new TagWith() API in a LINQ query. Using the spatial query from a previous example:
+To take advantage of query tags, you annotate a LINQ query using the new TagWith() method: 
 
 ``` csharp
   var nearestFriends =
@@ -22,7 +22,7 @@ To take advantage of the feature, you annotate a query using the new TagWith() A
       select f).Take(5).ToList();
 ```
 
-This will generate the following SQL output:
+This LINQ query is translated to the following SQL query:
 
 ``` sql
 -- This is my spatial query!
@@ -32,8 +32,9 @@ FROM [Friends] AS [f]
 ORDER BY [f].[Location].STDistance(@__myLocation_0) DESC
 ```
 
-It is possible to call `TagWith()` multiple times on the same query. Tags are cummulative. For example, for code like this:
-
+It's possible to call `TagWith()` many times on the same query.
+Query tags are cumulative.
+For example, given the following methods:
 
 ``` csharp
 IQueryable<Friend> GetNearestFriends(Point myLocation) =>
@@ -43,14 +44,15 @@ IQueryable<Friend> GetNearestFriends(Point myLocation) =>
 
 IQueryable<T> Limit<T>(IQueryable<T> source, int limit) =>
     source.TagWith("Limit").Take(limit);
-   
-...
-
-var results = Limit(GetNearestFriends(myLocation), 25).ToList();
-
 ```
 
-The SQL generated will look like this:
+The following query:   
+
+``` csharp
+var results = Limit(GetNearestFriends(myLocation), 25).ToList();
+```
+
+Translates to:
 
 ``` sql
 -- GetNearestFriends
@@ -62,7 +64,8 @@ FROM [Friends] AS [f]
 ORDER BY [f].[Location].STDistance(@__myLocation_0) DESC
 ```
 
-It is also possible to use multi-line strings as query tags. For example:
+It's also possible to use multi-line strings as query tags.
+For example:
 
 ``` csharp
 var results = Limit(GetNearestFriends(myLocation), 25).TagWith(
@@ -86,6 +89,6 @@ ORDER BY [f].[Location].STDistance(@__myLocation_0) DESC
 ```
 
 ## Limitations
-Query tags are treated as string literals that EF Core flows from the LINQ query to the generated SQL.
-Since they are literals, they are integral part of the query and not a parameter.
-This implies that it is not possible to create an EF Core compiled query that takes the argument for a query tag as a parameter and to pass a different value in each call to the compiled query.
+Query tags aren't parameterizable:
+EF Core treats query tags as string literals that are included in the generated SQL.
+Compiled queries that take query tags as parameters aren't allowed.
