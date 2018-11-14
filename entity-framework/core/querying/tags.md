@@ -10,9 +10,7 @@ uid: core/querying/tags
 > [!NOTE]
 > This feature is new in EF Core 2.2.
 
-This feature simplifies the correlation of LINQ queries in code with generated SQL queries captured in logs.
-
-To take advantage of query tags, you annotate a LINQ query using the new TagWith() method: 
+This feature helps correlate LINQ queries in code with generated SQL queries captured in logs by annotating LINQ query using the new TagWith() method: 
 
 ``` csharp
   var nearestFriends =
@@ -87,7 +85,7 @@ FROM [Friends] AS [f]
 ORDER BY [f].[Location].STDistance(@__myLocation_0) DESC
 ```
 
-## Limitations
-Query tags aren't parameterizable:
+## Known limitations
+**Query tags aren't parameterizable:**
 EF Core treats query tags as string literals that are included in the generated SQL.
 Compiled queries that take query tags as parameters aren't allowed.

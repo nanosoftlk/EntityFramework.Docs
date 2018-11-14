@@ -65,12 +65,14 @@ For more information on this feature, see the [spatial types documentation](xref
 
 ## Collections of owned entities
 
-EF Core 2.0 added the ability to model ownership in one-to-one associations.  
+EF Core 2.0 added the ability to model ownership in one-to-one associations.
 EF Core 2.2 extends the ability to express ownership to one-to-many associations.
-Ownership helps constrain how entities are used. 
+Ownership helps constrain how entities are used.
+
 For example, owned entities:
 - Can only ever appear on navigation properties of other entity types. 
 - Are automatically loaded, and can only be tracked by a DbContext alongside their owner.
+
 In relational databases, owned collections are mapped to separate tables from the owner, just like regular one-to-many associations.
 But in document-oriented databases, we plan to nest owned entities (in owned collections or references) within the same document as the owner.
 
